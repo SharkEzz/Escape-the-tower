@@ -4,5 +4,7 @@
 void aff_stats(int pv, int mana, int etage);
 void efface_ecran();
 void delay(int sec);
+int generateur_random();
+
 
 #endif

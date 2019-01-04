@@ -9,15 +9,33 @@ int main(int argc, char **argv)
     int etat_partie = 0;
     int etage_actuel = 0;
     int ennemi_present = 0;
-    int potion_present = 1;
+    int potion_present = 0;
     int pv = 100;
     int mana = 100;
     int choix = 0;
+    int aleatoire = 0;
+
 
     etat_partie = 1;
 
     while(etat_partie)
     {
+
+        aleatoire = generateur_random();
+
+        if(aleatoire > 25 && aleatoire < 38)
+        {
+            potion_present = 1;
+        }
+        else if(aleatoire > 38 && aleatoire <= 50)
+        {
+            ennemi_present = 1;
+        }
+        else
+        {
+            potion_present = 0;
+            ennemi_present = 0;
+        }
 
         aff_stats(pv, mana, etage_actuel);
 
@@ -123,7 +141,7 @@ void aff_stats(int pv, int mana, int etage)
 
     printf("Points de vie : %d\n", pv);
     printf("Points de mana : %d\n", mana);
-    printf("Etage actuel : %d\n\n\n", etage);   
+    printf("Etage actuel : %d\n\n\n", etage);
 }
 
 void efface_ecran()
@@ -136,4 +154,12 @@ void delay(int sec)
     int milli_seconds = 1000 * sec; 
     clock_t start_time = clock(); 
     while (clock() < start_time + milli_seconds); 
-} 
+}
+
+int generateur_random() // Retourne un nombre entre 15 et 50
+{
+    int a = 15;
+    int b = 50;
+
+    return rand()%(b-a) +a;
+}
