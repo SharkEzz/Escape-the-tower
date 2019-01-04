@@ -31,6 +31,8 @@ int main(int argc, const char **argv)
     int choix = 0;
     int aleatoire = 0;
     int pv_ennemi = randomf(85,100);
+    int score = 0;
+    int inventaire = 0; // Nombre de potion dans l'inventaire
 
     if(argv[1] != NULL)
     {
@@ -40,9 +42,6 @@ int main(int argc, const char **argv)
         }
     }
     
-        
-
-
     etat_partie = 1; // Indique que la partie est lancée (non utile pour le moment)
 
     while(etat_partie)
@@ -80,13 +79,14 @@ int main(int argc, const char **argv)
             mana = mana + 2;
         }
 
-        aff_stats(pv, mana, etage_actuel); // Affiche les stats en haut du terminal
+        aff_stats(pv, mana, etage_actuel, inventaire); // Affiche les stats en haut du terminal
 
         if(etage_actuel == 50)
         {
             efface_ecran();
 
             printf("Félécitation ! Vous avez gagné !\n");
+            printf("Votre score est de %d points !\n", score);
 
             exit(1);
         }
@@ -113,7 +113,8 @@ int main(int argc, const char **argv)
             printf("Une potion se trouve dans la salle\n");
             printf("Que faire ?\n\n");
             printf("1 -> La ramasser\n");
-            printf("2 -> Continuer à monter\n\n");
+            printf("2 -> Continuer à monter\n");
+            printf("3 -> La stocker\n\n");
             printf("Votre choix : ");
             scanf("%d", &choix);
 
@@ -147,6 +148,13 @@ int main(int argc, const char **argv)
                 potion_present = 0;
                 etage_actuel++;
             }
+            else if (choix == 3)
+            {
+                etage_actuel++;
+                inventaire++;
+                printf("Potion stockée dans l'inventaire.\n");
+                delay(3000);
+            }
 
 
 
@@ -157,7 +165,7 @@ int main(int argc, const char **argv)
             ennemi_present = 0;
             printf("Vous rencontrez un ennemi ! Préparez vous au combat !\n");
             delay(3000);
-            combat(&pv, &mana, &pv_ennemi);
+            combat(&pv, &mana, &pv_ennemi, &score, &inventaire);
             pv_ennemi = 100;
             etage_actuel++;
         }
@@ -168,23 +176,25 @@ int main(int argc, const char **argv)
     return 0;
 }
 
-void combat(int *pv_pers, int *mana_pers, int *pv_ennemi)
+void combat(int *pv_pers, int *mana_pers, int *pv_ennemi, int *score, int *inventaire)
 {
     int choix = 0;
 
     while(*pv_ennemi > 0)
     {
         int aleatoire = randomf(1, 17);
+        int valeur_potion = randomf(10, 30);
 
         *pv_pers = *pv_pers - aleatoire;
+        *score = *score + aleatoire;
 
-        aff_stats_combat(*pv_pers, *mana_pers, *pv_ennemi);
+        aff_stats_combat(*pv_pers, *mana_pers, *pv_ennemi, *inventaire);
 
         printf("Vous subissez %s%d%s points de dégats !\n\n", RED, aleatoire, RESET);
 
         if(*pv_pers <= 0)
         {
-            printf("Vous avez perdu !");
+            printf("Vous avez perdu !\n");
             delay(3000);
             exit(1);
         }
@@ -195,6 +205,8 @@ void combat(int *pv_pers, int *mana_pers, int *pv_ennemi)
             printf("1 -> Attaque 1 (10 dégats | 3 mana)\n");
             printf("2 -> Attaque 2 (30 dégats | 10 mana)\n");
             printf("3 -> Attaque spéciale (70 dégats | 50 mana)\n\n");
+            printf("Objets dans l'inventaire :\n");
+            printf("4 -> Utiliser potion\n\n");
             printf("Votre choix : ");
             scanf("%d", &choix);
 
@@ -247,6 +259,29 @@ void combat(int *pv_pers, int *mana_pers, int *pv_ennemi)
                         delay(3000);
                         break;
                     }
+
+                case 4:
+                    if(*inventaire >= 1)
+                    {
+                        *pv_pers = *pv_pers + valeur_potion;
+                        *mana_pers = *mana_pers + valeur_potion;
+                        *inventaire = *inventaire - 1;
+
+                        if(*pv_pers > 100 || *mana_pers > 100)
+                        {
+                            *pv_pers = 100;
+                            *mana_pers = 100;
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        printf("Vous n'avez pas de potions dans votre inventaire !\n");
+                        delay(3000);
+                        break;
+                    }
+                    
+
                 
             }
         }
@@ -257,7 +292,7 @@ void combat(int *pv_pers, int *mana_pers, int *pv_ennemi)
     
 }
 
-void aff_stats(int pv, int mana, int etage)
+void aff_stats(int pv, int mana, int etage, int inventaire)
 {
     if(pv >= 50)
     {
@@ -285,10 +320,11 @@ void aff_stats(int pv, int mana, int etage)
         printf("Points de mana : %s%d%s\n", RED, mana, RESET);
     }
 
+    printf("Nombre de potions stockées : %d\n", inventaire);
     printf("Etage actuel : %d\n\n\n", etage);
 }
 
-void aff_stats_combat(int pv, int mana, int pv_ennemi)
+void aff_stats_combat(int pv, int mana, int pv_ennemi, int inventaire)
 {
     efface_ecran();
 
@@ -319,6 +355,8 @@ void aff_stats_combat(int pv, int mana, int pv_ennemi)
     {
         printf("Points de mana : %s%d%s\n", RED, mana, RESET);
     }
+
+       printf("Nombre de potions stockées : %d\n", inventaire);
 
     if(pv_ennemi >= 50)
     {
