@@ -21,7 +21,7 @@ int main(int argc, char **argv)
     while(etat_partie)
     {
 
-        aleatoire = generateur_random();
+        aleatoire = random(15,50);
 
         if(aleatoire > 25 && aleatoire < 38)
         {
@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 
         }
 
-        if(potion_present == 1 && ennemi_present == 0)
+        if(potion_present == 1)
         {
             printf("Une potion se trouve dans la salle\n");
             printf("Que faire ?\n\n");
@@ -144,22 +144,4 @@ void aff_stats(int pv, int mana, int etage)
     printf("Etage actuel : %d\n\n\n", etage);
 }
 
-void efface_ecran()
-{
-    system("clear");
-}
 
-void delay(int sec) 
-{ 
-    int milli_seconds = 1000 * sec; 
-    clock_t start_time = clock(); 
-    while (clock() < start_time + milli_seconds); 
-}
-
-int generateur_random() // Retourne un nombre entre 15 et 50
-{
-    int a = 15;
-    int b = 50;
-
-    return rand()%(b-a) +a;
-}
