@@ -20,5 +20,6 @@ int random(int min, int max) // Retourne un nombre entre min et max
     return rand()%(max-min)+min;
 }
 
+void combat();
 
 #endif
