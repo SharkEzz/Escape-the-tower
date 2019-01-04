@@ -31,7 +31,7 @@ int main(int argc, const char **argv)
     int aleatoire = 0;
     int pv_ennemi = 100;
 
-    etat_partie = 1;
+    etat_partie = 1; // Indique que la partie est lancée (non utile pour le moment)
 
     while(etat_partie)
     {
@@ -39,13 +39,13 @@ int main(int argc, const char **argv)
         // S'occupe de générer un nombre aléatoire et en fonction de celui-ci, faire en sorte qu'une potion/ennemi aparaisse dans la salle
         // Partie à équilibrer
 
-        aleatoire = random(15,70);
+        aleatoire = randomf(15,70);
 
-        if(aleatoire > 20 && aleatoire <= 28)
+        if(aleatoire > 15 && aleatoire <= 28)
         {
             potion_present = 1;
         }
-        else if(aleatoire >= 30 && aleatoire <= 50 && etage_actuel != 0)
+        else if(aleatoire >= 40 && aleatoire <= 50 && etage_actuel != 0)
         {
             ennemi_present = 1;
         }
@@ -56,6 +56,8 @@ int main(int argc, const char **argv)
         }
 
         // Partie jeu
+
+        efface_ecran();
 
         aff_stats(pv, mana, etage_actuel); // Affiche les stats en haut du terminal
 
@@ -143,10 +145,9 @@ int main(int argc, const char **argv)
         if(ennemi_present == 1)
         {
             printf("Vous rencontrez un ennemi ! Préparez vous au combat !\n");
-            while(pv_ennemi != 0)
-            {
-
-            }
+            delay(3000);
+            combat(&pv, &mana, &pv_ennemi);
+            ennemi_present = 0;
         }
 
     }
@@ -157,14 +158,61 @@ int main(int argc, const char **argv)
 
 void aff_stats(int pv, int mana, int etage)
 {
-    efface_ecran();
-
     printf("Points de vie : %d\n", pv);
     printf("Points de mana : %d\n", mana);
     printf("Etage actuel : %d\n\n\n", etage);
 }
 
-void combat()
+void aff_stats_combat(int pv, int mana, int pv_ennemi)
 {
+    printf("PV : %d\n", pv);
+    printf("MANA : %d\n", mana);
+    printf("PV Ennemi : %d\n\n", pv_ennemi);
+}
 
+void combat(int *pv_pers, int *mana_pers, int *pv_ennemi)
+{
+    int choix = 0;
+
+    while(*pv_ennemi != 0)
+    {
+        int aleatoire = randomf(1, 17);
+
+        efface_ecran();
+
+        printf(" -- EN COMBAT -- \n\n");
+
+        *pv_pers = *pv_pers - aleatoire;
+
+        aff_stats_combat(*pv_pers, *mana_pers, *pv_ennemi);
+
+        printf("Vous subissez %d points de dégats !\n\n", aleatoire);
+
+        printf("C'est votre tour !\n");
+        printf("Vos attaques :\n");
+        printf("1 -> Attaque 1 (10 dégats | 5 mana)\n");
+        printf("2 -> Attaque 2 (30 dégats | 10 mana)\n");
+        printf("3 -> Attaque spéciale (70 dégats | 50 mana\n");
+        printf("Votre choix : ");
+        scanf("%d", &choix);
+
+        switch(choix)
+        {
+            case 1:
+                printf("1\n");
+                delay(2000);
+                break;
+            case 2:
+                printf("2\n");
+                delay(2000);
+                break;
+            case 3:
+                printf("3\n");
+                delay(2000);
+                break;
+
+        }
+    }
+
+    
 }

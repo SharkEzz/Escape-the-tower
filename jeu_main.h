@@ -15,11 +15,15 @@ void delay(int sec)
     while (clock() < start_time + milli_seconds); 
 }
 
-int random(int min, int max) // Retourne un nombre entre min et max
+int randomf(int min, int max) // Retourne un nombre entre min et max
 {
+    srand(time(NULL));
     return rand()%(max-min)+min;
 }
 
-void combat();
+void combat(int *pv_pers, int *mana_pers, int *pv_ennemi);
+void aff_stats_combat(int pv, int mana, int pv_ennemi);
+
+
 
 #endif
