@@ -22,14 +22,14 @@ int main(int argc, const char **argv)
     // Déclaration des variables (PV, mana, etc...)
 
     int etat_partie = 0;
-    int etage_actuel = 0;
+    int etage_actuel = 49;
     int ennemi_present = 0;
     int potion_present = 0;
     int pv = 100;
     int mana = 100;
     int choix = 0;
     int aleatoire = 0;
-    int pv_ennemi = 100;
+    int pv_ennemi = randomf(85,100);
 
     etat_partie = 1; // Indique que la partie est lancée (non utile pour le moment)
 
@@ -39,13 +39,13 @@ int main(int argc, const char **argv)
         // S'occupe de générer un nombre aléatoire et en fonction de celui-ci, faire en sorte qu'une potion/ennemi aparaisse dans la salle
         // Partie à équilibrer
 
-        aleatoire = randomf(15,70);
+        aleatoire = randomf(10,60);
 
-        if(aleatoire > 15 && aleatoire <= 28)
+        if(aleatoire > 16 && aleatoire <= 35)
         {
             potion_present = 1;
         }
-        else if(aleatoire >= 40 && aleatoire <= 50 && etage_actuel != 0)
+        else if(aleatoire >= 39 && aleatoire <= 50 && etage_actuel != 0)
         {
             ennemi_present = 1;
         }
@@ -59,31 +59,22 @@ int main(int argc, const char **argv)
 
         efface_ecran();
 
+        if(mana <= 100)
+        {
+            mana = mana;
+        }
+        else
+        {
+            mana = mana + 2;
+        }
+
         aff_stats(pv, mana, etage_actuel); // Affiche les stats en haut du terminal
 
-        if(etage_actuel == 100)
+        if(etage_actuel == 50)
         {
             efface_ecran();
 
             printf("Félécitation ! Vous avez gagné !\n");
-
-            exit(1);
-        }
-
-        if(pv == 0)
-        {
-            efface_ecran();
-
-            printf("Dommage ! Vous êtes mort !\n");
-
-            exit(1);
-        }
-
-        if(mana == 0)
-        {
-            efface_ecran();
-
-            printf("Vous n'avez plus de mana !\n");
 
             exit(1);
         }
@@ -119,9 +110,16 @@ int main(int argc, const char **argv)
                 if(pv <= 85 && mana <= 85)
                 {
                     potion_present = 0;
-                    pv = pv + 15;
-                    mana = mana +15;
+                    pv = pv + randomf(10,30);
+                    mana = mana + randomf(10,30);
                     etage_actuel++;
+
+                    if(mana > 100 || pv > 100)
+                    {
+                        mana = 100;
+                        pv = 100;
+                    }
+
                 }
                 else
                 {
@@ -144,10 +142,12 @@ int main(int argc, const char **argv)
 
         if(ennemi_present == 1)
         {
+            ennemi_present = 0;
             printf("Vous rencontrez un ennemi ! Préparez vous au combat !\n");
             delay(3000);
             combat(&pv, &mana, &pv_ennemi);
-            ennemi_present = 0;
+            pv_ennemi = 100;
+            etage_actuel++;
         }
 
     }
@@ -165,6 +165,10 @@ void aff_stats(int pv, int mana, int etage)
 
 void aff_stats_combat(int pv, int mana, int pv_ennemi)
 {
+    efface_ecran();
+
+    printf(" -- EN COMBAT -- \n\n");
+
     printf("PV : %d\n", pv);
     printf("MANA : %d\n", mana);
     printf("PV Ennemi : %d\n\n", pv_ennemi);
@@ -174,13 +178,9 @@ void combat(int *pv_pers, int *mana_pers, int *pv_ennemi)
 {
     int choix = 0;
 
-    while(*pv_ennemi != 0)
+    while(*pv_ennemi > 0)
     {
         int aleatoire = randomf(1, 17);
-
-        efface_ecran();
-
-        printf(" -- EN COMBAT -- \n\n");
 
         *pv_pers = *pv_pers - aleatoire;
 
@@ -188,30 +188,76 @@ void combat(int *pv_pers, int *mana_pers, int *pv_ennemi)
 
         printf("Vous subissez %d points de dégats !\n\n", aleatoire);
 
-        printf("C'est votre tour !\n");
-        printf("Vos attaques :\n");
-        printf("1 -> Attaque 1 (10 dégats | 5 mana)\n");
-        printf("2 -> Attaque 2 (30 dégats | 10 mana)\n");
-        printf("3 -> Attaque spéciale (70 dégats | 50 mana\n");
-        printf("Votre choix : ");
-        scanf("%d", &choix);
-
-        switch(choix)
+        if(*pv_pers <= 0)
         {
-            case 1:
-                printf("1\n");
-                delay(2000);
-                break;
-            case 2:
-                printf("2\n");
-                delay(2000);
-                break;
-            case 3:
-                printf("3\n");
-                delay(2000);
-                break;
-
+            printf("Vous avez perdu !");
+            delay(3000);
+            exit(1);
         }
+        else
+        {
+            printf("C'est votre tour !\n");
+            printf("Vos attaques :\n");
+            printf("1 -> Attaque 1 (10 dégats | 3 mana)\n");
+            printf("2 -> Attaque 2 (30 dégats | 10 mana)\n");
+            printf("3 -> Attaque spéciale (70 dégats | 50 mana)\n");
+            printf("Votre choix : ");
+            scanf("%d", &choix);
+
+            switch(choix)
+            {
+                case 1:
+                    if(*mana_pers - 3 <= 0)
+                    {
+                        printf("Vous n'avez pas assez de mana pour cette attaque\n");
+                        delay(3000);
+                        break;
+                    }
+                    else
+                    {
+                        printf("\nVous utilisez votre attaque n°1 et infligez 10 dégats à l'ennemi !\n");
+                        *pv_ennemi = *pv_ennemi - 10;
+                        *mana_pers = *mana_pers - 3;
+                        delay(3000);
+                        break;
+                    }
+                
+                case 2:
+                    if(*mana_pers - 10 <= 0)
+                    {
+                        printf("Vous n'avez pas assez de mana pour cette attaque\n");
+                        delay(3000);
+                        break;
+                    }
+                    else
+                    {
+                        printf("\nVous utilisez votre attaque n°1 et infligez 30 dégats à l'ennemi !\n");
+                        *pv_ennemi = *pv_ennemi - 30;
+                        *mana_pers = *mana_pers - 10;
+                        delay(3000);
+                        break;
+                    }
+                
+                case 3:
+                    if(*mana_pers - 50 <= 0)
+                    {   
+                        printf("Vous n'avez pas assez de mana pour cette attaque\n");
+                        delay(3000);
+                        break;
+                    }
+                    else
+                    {
+                        printf("\nVous utilisez votre attaque spéciale et infligez 50 dégats à l'ennemi !\n");
+                        *pv_ennemi = *pv_ennemi - 70;
+                        *mana_pers = *mana_pers - 50;
+                        delay(3000);
+                        break;
+                    }
+                
+            }
+        }
+
+        
     }
 
     
