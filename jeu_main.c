@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 #include "jeu_main.h"
 
-/*
-//Couleurs pour le terminal (non utilisé pour le moment)
+
+//Couleurs pour le terminal
 
 #define RED   "\x1B[31m"
 #define GRN   "\x1B[32m"
@@ -14,7 +15,7 @@
 #define CYN   "\x1B[36m"
 #define WHT   "\x1B[37m"
 #define RESET "\x1B[0m"
-*/
+
 
 int main(int argc, const char **argv)
 {
@@ -22,7 +23,7 @@ int main(int argc, const char **argv)
     // Déclaration des variables (PV, mana, etc...)
 
     int etat_partie = 0;
-    int etage_actuel = 49;
+    int etage_actuel = 0;
     int ennemi_present = 0;
     int potion_present = 0;
     int pv = 100;
@@ -30,6 +31,17 @@ int main(int argc, const char **argv)
     int choix = 0;
     int aleatoire = 0;
     int pv_ennemi = randomf(85,100);
+
+    if(argv[1] != NULL)
+    {
+        if(strcmp(argv[1], "-h") != 1)
+        {
+            aide();
+        }
+    }
+    
+        
+
 
     etat_partie = 1; // Indique que la partie est lancée (non utile pour le moment)
 
@@ -45,7 +57,7 @@ int main(int argc, const char **argv)
         {
             potion_present = 1;
         }
-        else if(aleatoire >= 39 && aleatoire <= 50 && etage_actuel != 0)
+        else if(aleatoire >= 37 && aleatoire <= 50 && etage_actuel != 0)
         {
             ennemi_present = 1;
         }
@@ -156,24 +168,6 @@ int main(int argc, const char **argv)
     return 0;
 }
 
-void aff_stats(int pv, int mana, int etage)
-{
-    printf("Points de vie : %d\n", pv);
-    printf("Points de mana : %d\n", mana);
-    printf("Etage actuel : %d\n\n\n", etage);
-}
-
-void aff_stats_combat(int pv, int mana, int pv_ennemi)
-{
-    efface_ecran();
-
-    printf(" -- EN COMBAT -- \n\n");
-
-    printf("PV : %d\n", pv);
-    printf("MANA : %d\n", mana);
-    printf("PV Ennemi : %d\n\n", pv_ennemi);
-}
-
 void combat(int *pv_pers, int *mana_pers, int *pv_ennemi)
 {
     int choix = 0;
@@ -186,7 +180,7 @@ void combat(int *pv_pers, int *mana_pers, int *pv_ennemi)
 
         aff_stats_combat(*pv_pers, *mana_pers, *pv_ennemi);
 
-        printf("Vous subissez %d points de dégats !\n\n", aleatoire);
+        printf("Vous subissez %s%d%s points de dégats !\n\n", RED, aleatoire, RESET);
 
         if(*pv_pers <= 0)
         {
@@ -196,11 +190,11 @@ void combat(int *pv_pers, int *mana_pers, int *pv_ennemi)
         }
         else
         {
-            printf("C'est votre tour !\n");
+            printf("C'est votre tour !\n\n");
             printf("Vos attaques :\n");
             printf("1 -> Attaque 1 (10 dégats | 3 mana)\n");
             printf("2 -> Attaque 2 (30 dégats | 10 mana)\n");
-            printf("3 -> Attaque spéciale (70 dégats | 50 mana)\n");
+            printf("3 -> Attaque spéciale (70 dégats | 50 mana)\n\n");
             printf("Votre choix : ");
             scanf("%d", &choix);
 
@@ -261,4 +255,94 @@ void combat(int *pv_pers, int *mana_pers, int *pv_ennemi)
     }
 
     
+}
+
+void aff_stats(int pv, int mana, int etage)
+{
+    if(pv >= 50)
+    {
+        printf("Points de vie : %s%d%s\n", GRN, pv, RESET);
+    }
+    else if(pv >=30 && pv < 50)
+    {
+        printf("Points de vie : %s%d%s\n", YEL, pv, RESET); 
+    }
+    else if(pv < 30)
+    {
+        printf("Points de vie : %s%d%s\n", RED, pv, RESET); 
+    }
+
+    if(mana >= 50)
+    {
+        printf("Points de mana : %s%d%s\n", GRN, mana, RESET);
+    }
+    else if(mana >=30 && mana < 50)
+    {
+        printf("Points de mana : %s%d%s\n", YEL, mana, RESET);
+    }
+    else if(mana < 30)
+    {
+        printf("Points de mana : %s%d%s\n", RED, mana, RESET);
+    }
+
+    printf("Etage actuel : %d\n\n\n", etage);
+}
+
+void aff_stats_combat(int pv, int mana, int pv_ennemi)
+{
+    efface_ecran();
+
+    printf(" -- EN COMBAT -- \n\n");
+
+    if(pv >= 50)
+    {
+        printf("Points de vie : %s%d%s\n", GRN, pv, RESET);
+    }
+    else if(pv >=30 && pv < 50)
+    {
+        printf("Points de vie : %s%d%s\n", YEL, pv, RESET); 
+    }
+    else if(pv < 30)
+    {
+        printf("Points de vie : %s%d%s\n", RED, pv, RESET); 
+    }
+
+    if(mana >= 50)
+    {
+        printf("Points de mana : %s%d%s\n", GRN, mana, RESET);
+    }
+    else if(mana >=30 && mana < 50)
+    {
+        printf("Points de mana : %s%d%s\n", YEL, mana, RESET);
+    }
+    else if(mana < 30)
+    {
+        printf("Points de mana : %s%d%s\n", RED, mana, RESET);
+    }
+
+    if(pv_ennemi >= 50)
+    {
+        printf("PV Ennemi : %s%d%s\n\n", RED, pv_ennemi, RESET);
+    }
+    else if(pv_ennemi >=30 && pv_ennemi < 50)
+    {
+        printf("PV Ennemi : %s%d%s\n\n", YEL, pv_ennemi, RESET);
+    }
+    else if(pv_ennemi < 30)
+    {
+        printf("PV Ennemi : %s%d%s\n\n", GRN, pv_ennemi, RESET);
+    }
+
+}
+
+void aide()
+{
+    system("clear");
+
+    printf(" -- Escape the tower --\n");
+    printf("          ALPHA \n\n");
+    printf("Aide en cours de rédaction...\n");
+    printf("Pour lancer le jeu, tapez './escape' sans arguments\n\n");
+    exit(1);
+
 }

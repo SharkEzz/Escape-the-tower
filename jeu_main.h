@@ -23,6 +23,7 @@ int randomf(int min, int max) // Retourne un nombre entre min et max
 
 void combat(int *pv_pers, int *mana_pers, int *pv_ennemi);
 void aff_stats_combat(int pv, int mana, int pv_ennemi);
+void aide();
 
 
 
