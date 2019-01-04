@@ -23,7 +23,7 @@ int main(int argc, const char **argv)
     // Déclaration des variables (PV, mana, etc...)
 
     int etat_partie = 0;
-    int etage_actuel = 46;
+    int etage_actuel = 0;
     int ennemi_present = 0;
     int potion_present = 0;
     int pv = 100;
@@ -50,9 +50,9 @@ int main(int argc, const char **argv)
         // S'occupe de générer un nombre aléatoire et en fonction de celui-ci, faire en sorte qu'une potion/ennemi aparaisse dans la salle
         // Partie à équilibrer
 
-        aleatoire = randomf(10,60);
+        aleatoire = randomf(10,65);
 
-        if(aleatoire > 16 && aleatoire <= 35)
+        if(aleatoire > 20 && aleatoire <= 35)
         {
             potion_present = 1;
         }
@@ -153,7 +153,8 @@ int main(int argc, const char **argv)
                 etage_actuel++;
                 inventaire++;
                 printf("Potion stockée dans l'inventaire.\n");
-                delay(3000);
+                potion_present = 0;
+                delay(3000);  
             }
 
 
@@ -205,8 +206,11 @@ void combat(int *pv_pers, int *mana_pers, int *pv_ennemi, int *score, int *inven
             printf("1 -> Attaque 1 (10 dégats | 3 mana)\n");
             printf("2 -> Attaque 2 (30 dégats | 10 mana)\n");
             printf("3 -> Attaque spéciale (70 dégats | 50 mana)\n\n");
-            printf("Objets dans l'inventaire :\n");
-            printf("4 -> Utiliser potion\n\n");
+            if(*inventaire > 0)
+            {
+                printf("Objets dans l'inventaire :\n");
+                printf("4 -> Utiliser potion\n\n");
+            }
             printf("Votre choix : ");
             scanf("%d", &choix);
 
@@ -274,12 +278,7 @@ void combat(int *pv_pers, int *mana_pers, int *pv_ennemi, int *score, int *inven
                         }
                         break;
                     }
-                    else
-                    {
-                        printf("Vous n'avez pas de potions dans votre inventaire !\n");
-                        delay(3000);
-                        break;
-                    }
+                    
                     
 
                 
