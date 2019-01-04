@@ -23,7 +23,7 @@ int main(int argc, const char **argv)
     // Déclaration des variables (PV, mana, etc...)
 
     int etat_partie = 0;
-    int etage_actuel = 0;
+    int etage_actuel = 46;
     int ennemi_present = 0;
     int potion_present = 0;
     int pv = 100;
@@ -81,7 +81,7 @@ int main(int argc, const char **argv)
 
         aff_stats(pv, mana, etage_actuel, inventaire); // Affiche les stats en haut du terminal
 
-        if(etage_actuel == 50)
+        if(etage_actuel >= 50)
         {
             efface_ecran();
 
