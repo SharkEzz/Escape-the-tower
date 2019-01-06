@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <unistd.h>
 #include "jeu_main.h"
-
 
 //Couleurs pour le terminal
 
@@ -15,7 +15,6 @@
 #define CYN   "\x1B[36m"
 #define WHT   "\x1B[37m"
 #define RESET "\x1B[0m"
-
 
 int main(int argc, const char **argv)
 {
@@ -33,16 +32,19 @@ int main(int argc, const char **argv)
     int pv_ennemi = randomf(85,100);
     int score = 0;
     int inventaire = 0; // Nombre de potion dans l'inventaire
+    int ennemi_precedent = 0; // Indique si un ennemi était présent à l'étage précédent
 
     if(argv[1] != NULL)
     {
-        if(strcmp(argv[1], "-h") != 1)
+        if(strcmp(argv[1], "-h") == 0)
         {
             aide();
         }
     }
     
-    etat_partie = 1; // Indique que la partie est lancée (non utile pour le moment)
+    etat_partie = accueil(&etat_partie);
+
+    //etat_partie = 1;
 
     while(etat_partie)
     {
@@ -52,11 +54,12 @@ int main(int argc, const char **argv)
 
         aleatoire = randomf(10,65);
 
-        if(aleatoire > 20 && aleatoire <= 35)
+        if(aleatoire > 22 && aleatoire <= 35)
         {
             potion_present = 1;
+            ennemi_precedent = 0;
         }
-        else if(aleatoire >= 37 && aleatoire <= 50 && etage_actuel != 0)
+        else if(aleatoire >= 35 && aleatoire <= 50 && etage_actuel != 0 && ennemi_precedent == 0)
         {
             ennemi_present = 1;
         }
@@ -127,9 +130,13 @@ int main(int argc, const char **argv)
                     mana = mana + randomf(10,30);
                     etage_actuel++;
 
-                    if(mana > 100 || pv > 100)
+                    if(mana > 100)
                     {
                         mana = 100;
+                    }
+
+                    if(pv > 100)
+                    {
                         pv = 100;
                     }
 
@@ -137,7 +144,7 @@ int main(int argc, const char **argv)
                 else
                 {
                     printf("Vous avez déjâ le nombre maximal de PV et de Mana !\n");
-                    delay(5000);
+                    sleep(5);
                     potion_present = 0;
                     etage_actuel++;
                 }
@@ -154,7 +161,7 @@ int main(int argc, const char **argv)
                 inventaire++;
                 printf("Potion stockée dans l'inventaire.\n");
                 potion_present = 0;
-                delay(3000);  
+                sleep(3);
             }
 
 
@@ -164,8 +171,9 @@ int main(int argc, const char **argv)
         if(ennemi_present == 1)
         {
             ennemi_present = 0;
+            ennemi_precedent = 1;
             printf("Vous rencontrez un ennemi ! Préparez vous au combat !\n");
-            delay(3000);
+            sleep(3);
             combat(&pv, &mana, &pv_ennemi, &score, &inventaire);
             pv_ennemi = 100;
             etage_actuel++;
@@ -196,7 +204,7 @@ void combat(int *pv_pers, int *mana_pers, int *pv_ennemi, int *score, int *inven
         if(*pv_pers <= 0)
         {
             printf("Vous avez perdu !\n");
-            delay(3000);
+            sleep(3);
             exit(1);
         }
         else
@@ -220,7 +228,7 @@ void combat(int *pv_pers, int *mana_pers, int *pv_ennemi, int *score, int *inven
                     if(*mana_pers - 3 <= 0)
                     {
                         printf("Vous n'avez pas assez de mana pour cette attaque\n");
-                        delay(3000);
+                        sleep(3);
                         break;
                     }
                     else
@@ -228,7 +236,7 @@ void combat(int *pv_pers, int *mana_pers, int *pv_ennemi, int *score, int *inven
                         printf("\nVous utilisez votre attaque n°1 et infligez 10 dégats à l'ennemi !\n");
                         *pv_ennemi = *pv_ennemi - 10;
                         *mana_pers = *mana_pers - 3;
-                        delay(3000);
+                        sleep(3);
                         break;
                     }
                 
@@ -236,7 +244,7 @@ void combat(int *pv_pers, int *mana_pers, int *pv_ennemi, int *score, int *inven
                     if(*mana_pers - 10 <= 0)
                     {
                         printf("Vous n'avez pas assez de mana pour cette attaque\n");
-                        delay(3000);
+                        sleep(3);
                         break;
                     }
                     else
@@ -244,7 +252,7 @@ void combat(int *pv_pers, int *mana_pers, int *pv_ennemi, int *score, int *inven
                         printf("\nVous utilisez votre attaque n°1 et infligez 30 dégats à l'ennemi !\n");
                         *pv_ennemi = *pv_ennemi - 30;
                         *mana_pers = *mana_pers - 10;
-                        delay(3000);
+                        sleep(3);
                         break;
                     }
                 
@@ -252,7 +260,7 @@ void combat(int *pv_pers, int *mana_pers, int *pv_ennemi, int *score, int *inven
                     if(*mana_pers - 50 <= 0)
                     {   
                         printf("Vous n'avez pas assez de mana pour cette attaque\n");
-                        delay(3000);
+                        sleep(3);
                         break;
                     }
                     else
@@ -260,7 +268,7 @@ void combat(int *pv_pers, int *mana_pers, int *pv_ennemi, int *score, int *inven
                         printf("\nVous utilisez votre attaque spéciale et infligez 50 dégats à l'ennemi !\n");
                         *pv_ennemi = *pv_ennemi - 70;
                         *mana_pers = *mana_pers - 50;
-                        delay(3000);
+                        sleep(3);
                         break;
                     }
 
@@ -382,4 +390,38 @@ void aide()
     printf("Pour lancer le jeu, tapez './escape' sans arguments\n\n");
     exit(1);
 
+}
+
+int accueil(int *etat_partie)
+{
+    int choix = 0;
+
+    efface_ecran();
+
+    printf("%s -- ESCAPE THE TOWER -- %s\n\n\n", GRN, RESET);
+
+    printf("Menu principal :\n\n");
+    printf("1 -> Lancer le jeu\n");
+    printf("2 -> Charger la dernière partie\n");
+    printf("3 -> Quitter\n\n");
+    printf("Votre choix : ");
+    scanf("%d", &choix);
+
+    switch(choix)
+    {
+        case 1:
+            *etat_partie = 1;
+            printf("\n\nLancement de la partie !\n");
+            sleep(2);
+            break;
+        case 2:
+            printf("Pas encore disponible !\n");
+            sleep(2);
+            break;
+        case 3:
+            exit(1);
+            break;
+    }
+
+    return *etat_partie;
 }
