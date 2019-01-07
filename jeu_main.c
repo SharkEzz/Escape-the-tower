@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
+#include <time.h> // Pour le générateur de random
 #include <string.h>
-#include <unistd.h>
+#include <unistd.h> // Requis pour la fonction delay()
+#include <ncurses.h> // A des fins de tests pour l'aide du jeu
 #include "jeu_main.h"
 
 //Couleurs pour le terminal
@@ -18,7 +19,6 @@
 
 int main(int argc, const char **argv)
 {
-
     // Déclaration des variables (PV, mana, etc...)
 
     int etat_partie = 0;
@@ -39,6 +39,7 @@ int main(int argc, const char **argv)
         if(strcmp(argv[1], "-h") == 0)
         {
             aide();
+            exit(1);
         }
     }
     
@@ -49,7 +50,7 @@ int main(int argc, const char **argv)
     while(etat_partie)
     {
 
-        // S'occupe de générer un nombre aléatoire et en fonction de celui-ci, faire en sorte qu'une potion/ennemi aparaisse dans la salle
+        // S'occupe de générer un nombre aléatoire et en fonction de celui-ci, faire en sorte qu'une action aie lieux
         // Partie à équilibrer
 
         aleatoire = randomf(10,65);
@@ -382,13 +383,23 @@ void aff_stats_combat(int pv, int mana, int pv_ennemi, int inventaire)
 
 void aide()
 {
-    system("clear");
+    char *nom = "-- Escape the tower --";
 
-    printf(" -- Escape the tower --\n");
-    printf("          ALPHA \n\n");
-    printf("Aide en cours de rédaction...\n");
-    printf("Pour lancer le jeu, tapez './escape' sans arguments\n\n");
-    exit(1);
+    WINDOW *fenetre_aide;
+
+    initscr();
+
+    fenetre_aide = subwin(stdscr, LINES - 2, COLS, 2, 0);
+    box(fenetre_aide, ACS_VLINE, ACS_HLINE);
+
+    mvprintw(0, (COLS - strlen(nom))/ 2, nom);
+    mvprintw(1, (COLS - strlen("AIDE v.1")) / 2, "AIDE v.1");
+
+    wrefresh(fenetre_aide);
+
+    getch();
+
+    endwin();
 
 }
 
@@ -415,8 +426,9 @@ int accueil(int *etat_partie)
             sleep(2);
             break;
         case 2:
-            printf("Pas encore disponible !\n");
-            sleep(2);
+            printf("Pas encore implémenté\n");
+            sleep(5);
+            exit(1);
             break;
         case 3:
             exit(1);
